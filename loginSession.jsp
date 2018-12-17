@@ -13,21 +13,17 @@
 <%
 	String user = "root";
 	String password = "rladydpf2";
-	String url = "jdbc:mysql://localhost:3306/Shopping_mall?autoReconnect=true& useUnicode=true& characterEncoding=utf8 &useSSL=false&serverTimezone=Asia/Seoul";
+	String url = "jdbc:mysql://localhost:3306/database1?autoReconnect=true& useUnicode=true& characterEncoding=utf8 &useSSL=false&serverTimezone=Asia/Seoul";
 	Statement stmt = null;
 	PreparedStatement pstmt = null;
 	ResultSet rs = null;
 	Connection conn = null;
 	String sql = null;
 	
-	try {
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		conn = DriverManager.getConnection(url, user, password);
-		System.out.println("Driver loading success");
-	}
-	catch (ClassNotFoundException e) {
-		e.printStackTrace();
-	}
+	Class.forName("com.mysql.cj.jdbc.Driver");
+	conn = DriverManager.getConnection(url, user, password);
+	System.out.println("Driver loading success");
+	
 	// 파라미터값 가져오기 "id" "passwd"
 	// 사용자가 로그인 시 입력한 값
 	String id = request.getParameter("id");
@@ -38,7 +34,7 @@
 	boolean key = false;
 	String DBid, DBpwd;
 	
-	sql = "SELECT ID, Pwd, Cnumber FROM CUSTOMER";
+	sql = "SELECT ID, Pwd FROM PERSON";
 	pstmt = conn.prepareStatement(sql);
 	rs = pstmt.executeQuery();
 	if (id.equals(managerId)) { // 아이디 있음
@@ -53,18 +49,16 @@
 			</script>
 			<%
 		} else // 패스워드 틀림
-			out.println("패스워드틀림<br>");
+			out.println("패스워드 틀림<br>");
 	} 
-	int number = -1;
 	while (rs.next()) {
 		if (key) break;
 		DBid = rs.getString(1);
 		DBpwd = rs.getString(2);
-		number = rs.getInt(3);
 		if (id.equals(DBid)) {
 			key = true;
 			if (passwd.equals(DBpwd)) {
-				session.setAttribute("customer", number);
+				session.setAttribute("id", DBid);
 				out.println("로그인 인증됨<br>");
 				response.sendRedirect("mainPage.jsp");
 				%>
@@ -77,7 +71,7 @@
 		}
 	}		
 	if (key) {
-		out.println("패스워드틀림<br>");
+		out.println("패스워드 틀림<br>");
 	}
 	else out.println("아이디 없음<br>");
 %>
