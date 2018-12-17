@@ -9,32 +9,59 @@
 </head>
 <body>
 <%
-String manager = null;
-manager = (String)session.getAttribute("id");
-if (manager == null) {
+String user = "root";
+String password = "rladydpf2";
+String url = "jdbc:mysql://localhost:3306/database1?autoReconnect=true& useUnicode=true& characterEncoding=utf8 &useSSL=false&serverTimezone=Asia/Seoul";
+Statement stmt = null;
+PreparedStatement pstmt = null;
+ResultSet rs = null;
+Connection conn = null;
+String sql = null;
+
+try {
+	Class.forName("com.mysql.cj.jdbc.Driver");
+	conn = DriverManager.getConnection(url, user, password);
+	System.out.println("Driver loading success");
+}
+catch (ClassNotFoundException e) {
+	e.printStackTrace();
+}
+%>
+<h2>매니저 인터페이스</h2>
+<h4>고객 재고 요청 목록</h4>
+<table width="400" cellpadding="5" border ="1">
+		<tread>
+			<tr>
+				<th>요청 번호</th>
+				<th>요청 날짜</th>
+				<th>아이템 번호</th>
+			</tr>
+	    </tread>
+<%
+sql = "SELECT Rnumber, Rdate, Sitem FROM REQUEST, STOCK WHERE Ino = Inumber";
+pstmt = conn.prepareStatement(sql);
+rs = pstmt.executeQuery();
+
+int Rnumber = 0;
+String date = null, item = null;
+while (rs.next()){
+	Rnumber = rs.getInt(1);
+	date = rs.getString(2);
+	item = rs.getString(3);
 	%>
-	<script>
-	alert('당신은 매니저가 아닙니다.')
-	location.href = 'login.jsp'
-	</script>
+	<tr>
+		<td id="title"><%=Rnumber%></td>
+		<td id="title"><%=date%></td>
+		<td id="title"><%=item%></td>
+	</tr>
 	<%
 }
 %>
-<h2>매니저 전용 페이지 입니다.</h2>
+</table>
 <form action = "updateStock.jsp" method="post">
 	아이템 고유 번호 입력: <input type = "number" name = "id"><br>
-	매장 번호 입력: <input type = "number" name = "retail"><br>
 	수량 입력: <input type = "number" name = "quantity"><br>
 	<input type = "submit" value = "해당 상품 주문">
 </form>
-<br>
-<input type = "button" value = "재고가 모자란 상품 확인" onclick = "location.href = 'checkList.jsp'">
-<br><br>
-<form action = "getSales.jsp" method="get">
-	날짜 입력: <input type = "date" name = "start" value="2018-12-05" min="2016-10-01" max="2018-12-31"> 
-	 ~ <input type = "date" name = "finish" value="2018-12-05" min="2016-10-01" max="2018-12-31">
-	<input type = "submit" value = "매출 확인"> <br>
-</form>
-<input type = "button" value = "로그아웃" onclick = "location.href = 'logout.jsp'">
 </body>
 </html>
