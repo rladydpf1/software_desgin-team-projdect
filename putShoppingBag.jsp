@@ -1,17 +1,17 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
 <%@ page language="java" import = "java.text.*, java.sql.*" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="EUC-KR">
 <title>update shoppingBag</title>
 </head>
 <body>
 <%
-int customer = -1;
+String id = null;
 try {
-	customer = (int)session.getAttribute("customer");
+	id = (String)session.getAttribute("id");
 }
 catch (Exception e) {
 	%>
@@ -23,7 +23,7 @@ catch (Exception e) {
 }
 String user = "root";
 String password = "rladydpf2";
-String url = "jdbc:mysql://localhost:3306/Shopping_mall?autoReconnect=true& useUnicode=true& characterEncoding=utf8 &useSSL=false&serverTimezone=Asia/Seoul";
+String url = "jdbc:mysql://localhost:3306/database1?autoReconnect=true& useUnicode=true& characterEncoding=utf8 &useSSL=false&serverTimezone=Asia/Seoul";
 Statement stmt = null;
 PreparedStatement pstmt = null;
 ResultSet rs = null;
@@ -71,17 +71,24 @@ else if (quantity <= 0) {
 %>
 <%
 if (key){
-	sql = String.format("SELECT Bquantity FROM SHOPPINGBAG WHERE Cnum = %d AND Inum = %d", customer, item);
+	sql = String.format("SELECT Cnumber FROM CUSTOMER WHERE C_ID = '%s'", id);
+	pstmt = conn.prepareStatement(sql);
+	rs = pstmt.executeQuery();
+	int number = 0;
+	while (rs.next()) {
+		number = rs.getInt(1);
+	}
+	sql = String.format("SELECT Squantity FROM SHOPPINGBASKET WHERE Cnum = %d AND Inum = %d", number, item);
 	pstmt = conn.prepareStatement(sql);
 	rs = pstmt.executeQuery();
 	int overlap = 0;
 	while (rs.next()) {
 		overlap = rs.getInt(1);
-		sql = String.format("DELETE FROM SHOPPINGBAG WHERE Cnum = %d AND Inum = %d", customer, item);
+		sql = String.format("DELETE FROM SHOPPINGBASKET WHERE Cnum = %d AND Inum = %d", number, item);
 		pstmt = conn.prepareStatement(sql);
 		pstmt.executeUpdate();
 	}
-	sql = String.format("INSERT INTO SHOPPINGBAG VALUES (%d, %d, %d)", customer, quantity + overlap, item);
+	sql = String.format("INSERT INTO SHOPPINGBASKET VALUES (%d, %d, %d)", number, item, quantity + overlap);
 	pstmt = conn.prepareStatement(sql);
 	pstmt.executeUpdate();
 	%>
