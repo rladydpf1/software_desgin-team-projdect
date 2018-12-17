@@ -31,7 +31,7 @@
 	System.out.println(id);
 	String managerId = "manager1";
 	String managerPass = "manager2";
-	boolean key = false;
+	boolean key = false, key2 = true;
 	String DBid, DBpwd;
 	
 	sql = "SELECT ID, Pwd FROM PERSON";
@@ -39,7 +39,7 @@
 	rs = pstmt.executeQuery();
 	if (id.equals(managerId)) { // 아이디 있음
 		if(passwd.equals(managerPass)){
-			session.setAttribute("id", id);
+			key2 = false;
 			out.println("로그인 인증됨<br>");
 			response.sendRedirect("manager.jsp");
 			%>
@@ -51,29 +51,31 @@
 		} else // 패스워드 틀림
 			out.println("패스워드 틀림<br>");
 	} 
-	while (rs.next()) {
-		if (key) break;
-		DBid = rs.getString(1);
-		DBpwd = rs.getString(2);
-		if (id.equals(DBid)) {
-			key = true;
-			if (passwd.equals(DBpwd)) {
-				session.setAttribute("id", DBid);
-				out.println("로그인 인증됨<br>");
-				response.sendRedirect("mainPage.jsp");
-				%>
-				<script>
-					alert('로그인 인증되었습니다.');
-					location.href = 'mainPage.jsp';
-				</script>
-				<%
-			} 
+	if (key2) {
+		while (rs.next()) {
+			if (key) break;
+			DBid = rs.getString(1);
+			DBpwd = rs.getString(2);
+			if (id.equals(DBid)) {
+				key = true;
+				if (passwd.equals(DBpwd)) {
+					session.setAttribute("id", DBid);
+					out.println("로그인 인증됨<br>");
+					response.sendRedirect("mainPage.jsp");
+					%>
+					<script>
+						alert('로그인 인증되었습니다.');
+						location.href = 'mainPage.jsp';
+					</script>
+					<%
+				} 
+			}
+		}		
+		if (key) {
+			out.println("패스워드 틀림<br>");
 		}
-	}		
-	if (key) {
-		out.println("패스워드 틀림<br>");
+		else out.println("아이디 없음<br>");
 	}
-	else out.println("아이디 없음<br>");
 %>
 </body>
 </html>
