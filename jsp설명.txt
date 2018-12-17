@@ -1,13 +1,14 @@
 login, login session : 
 매니저는 manager1, manager2 입력하면 매니저 페이지로 이동.
 커스터머는 customer1, customer2 입력하면 고객 페이지로 이동.
-
+-------------------------- 매니저
 manager :
-request를 받음.
+요청을 받음.
+재고 주문.
 
 update stock :
-manager가 stock을 update함.
-
+재고 주문.
+--------------------------- 고객
 shoppingbag :
 현재 shopping bag 보여줌
 
@@ -15,7 +16,5 @@ put shoppingbag :
 장바구니에 담음
 
 search item, search result :
-아이템 이름 검색하면 재고 알려주기
+상품 검색, 장바구니에 담거나 해당 상품의 재고를 요청할 수 잇음.
 
-고객 페이지 :
-mainPage.jsp 수정하면 됨
