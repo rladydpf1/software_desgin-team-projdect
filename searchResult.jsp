@@ -1,17 +1,17 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
 <%@ page language="java" import = "java.text.*, java.sql.*" %>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+<meta charset="EUC-KR">
 <title>search result</title>
 </head>
 <body>
 <%
-int customer = -1;
+String id = null;
 try {
-	customer = (int)session.getAttribute("customer");
+	id = (String)session.getAttribute("id");
 }
 catch (Exception e) {
 	%>
@@ -23,7 +23,7 @@ catch (Exception e) {
 }
 String user = "root";
 String password = "rladydpf2";
-String url = "jdbc:mysql://localhost:3306/Shopping_mall?autoReconnect=true& useUnicode=true& characterEncoding=utf8 &useSSL=false&serverTimezone=Asia/Seoul";
+String url = "jdbc:mysql://localhost:3306/database1?autoReconnect=true& useUnicode=true& characterEncoding=utf8 &useSSL=false&serverTimezone=Asia/Seoul";
 Statement stmt = null;
 PreparedStatement pstmt = null;
 ResultSet rs = null;
@@ -39,7 +39,7 @@ catch (ClassNotFoundException e) {
 }
 String keyword = null;
 try {
-	keyword = new String(request.getParameter("name").getBytes("8859_1"), "UTF-8");
+	keyword = new String(request.getParameter("name").getBytes("8859_1"), "EUC-KR");
 }
 catch (Exception E) {
 	%>
@@ -49,41 +49,44 @@ catch (Exception E) {
 	</script>
 	<%
 }
-sql = String.format("SELECT Inumber, Iname, Price, Smallc FROM ITEM WHERE Iname LIKE '%%%s%%'", keyword);
+sql = String.format("SELECT Inumber, Sitem, quantity FROM STOCK WHERE Sitem LIKE '%%%s%%'", keyword);
 System.out.println(sql);
 pstmt = conn.prepareStatement(sql);
 rs = pstmt.executeQuery();
-int number = 0, price = 0;
-String name = null, cate = null;
+int number = 0, quantity = 0;
+String name = null;
 %>
 <table width="700" cellpadding="5" border ="1">
 			<tread>
 				<tr>
 					<th>상품 이름</th>
-					<th>가격</th>
-					<th>카테고리</th>
+					<th>재고량</th>
+					<th>수량</th>
 				</tr>
 		    </tread>
 	<%
 	while (rs.next()) {
 		number = rs.getInt(1);
 		name = rs.getString(2);
-		price = rs.getInt(3);
-		cate = rs.getString(4);
+		quantity = rs.getInt(3);
 	%>
 				<tr>
 			        <td id="title"><%=name%></td>
-			        <td id="title"><%=price%></td>
-			        <td id="title"><%=cate%></td>
-			        <td> <form action = "showItem.jsp" method="post">
+			        <td id="title"><%=quantity%></td>
+			        <td> <form action = "putShoppingBag.jsp" method="post">
+			        	<input type = "number" name = "quantity">
 						<input type = "hidden" name = "num" value =<%=number%>>
-						<input type = "submit" value = "상세">
+						<input type = "submit" value = "장바구니 담기">
+						</form> 
+					</td>
+					<td> <form action = "requestStock.jsp" method="post">
+			        	<input type = "hidden" name = "num" value =<%=number%>>
+						<input type = "submit" value = "재고 요청하기">
 						</form> 
 					</td>
 			    </tr>
 	<%
 }
 	%>
-</table>
 </body>
 </html>
